@@ -1,4 +1,4 @@
-package org.cytoscape.cyniDreamTDC.internal;
+package org.cytoscape.cyniDreamFunchisq.internal;
 
 import org.cytoscape.application.swing.CySwingApplication;
 
@@ -8,6 +8,10 @@ import org.cytoscape.application.swing.CyAction;
 import org.cytoscape.cyni.*;
 
 import org.osgi.framework.BundleContext;
+
+import org.cytoscape.cyniDreamFunchisq.internal.CkMeansDiscretization.*;
+import org.cytoscape.cyniDreamFunchisq.internal.FunChisqInference.*;
+import org.cytoscape.cyniDreamFunchisq.internal.FunChisqMetric.*;
 
 import org.cytoscape.property.CyProperty;
 import org.cytoscape.service.util.AbstractCyActivator;
@@ -20,10 +24,6 @@ import org.apache.commons.io.FileUtils;
 
 public class CyActivator extends AbstractCyActivator {
 	
-	public static final String DEFAULT_CONFIG_DIR = CyProperty.DEFAULT_PROPS_CONFIG_DIR ;
-	
-	private static final String DEF_USER_DIR = System.getProperty("user.home");
-	private String filesPath = join(File.separator, DEF_USER_DIR, DEFAULT_CONFIG_DIR, "3", "dreamTDC/");
 	
 	public CyActivator() {
 		super();
@@ -33,36 +33,22 @@ public class CyActivator extends AbstractCyActivator {
 	public void start(BundleContext bc) {
 
 		//Define new Cyni Algorithm
-		DreamTDCAlgorithm test = new DreamTDCAlgorithm(filesPath);
+		DreamFunchisqAlgorithm inferFun = new DreamFunchisqAlgorithm();
+		DreamCkMeansAlgorithm discreteFun = new DreamCkMeansAlgorithm();
+		FunChisqMetric metricFun = new FunChisqMetric();
 		//Register new Cyni Algorithm
-		registerService(bc,test,CyCyniAlgorithm.class, new Properties());
+		registerService(bc,inferFun,CyCyniAlgorithm.class, new Properties());
+		registerService(bc,discreteFun,CyCyniAlgorithm.class, new Properties());
+		registerService(bc,metricFun,CyCyniMetric.class, new Properties());
 
 		
 
 	}
 	@Override
 	public void shutDown() {
-		File testFile = new File(filesPath);
-		try{
-	    	if(testFile.exists())
-	    		FileUtils.deleteDirectory(testFile);
-		}catch (IOException e) {
-			
-		}
+	
 	}
 	
-	private static String join(String separator, String... parts) {
-		StringBuilder builder = new StringBuilder();
-		boolean isFirst = true;
-		for (String part : parts) {
-			if (!isFirst) {
-				builder.append(separator);
-			} else {
-				isFirst = false;
-			}
-			builder.append(part);
-		}
-		return builder.toString();
-	}
+	
 }
 

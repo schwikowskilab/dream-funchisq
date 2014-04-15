@@ -27,7 +27,7 @@
   along with this library; if not, write to the Free Software Foundation,
   Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
 */
-package org.cytoscape.cyniDreamTDC.internal;
+package org.cytoscape.cyniDreamFunchisq.internal.CkMeansDiscretization;
 
 
 import java.util.*;
@@ -54,17 +54,15 @@ import org.cytoscape.view.vizmap.VisualMappingManager;
  * The BasicInduction provides a very simple Induction, suitable as
  * the default Induction for Cytoscape data readers.
  */
-public class DreamTDCAlgorithm extends AbstractCyniAlgorithm  {
+public class DreamCkMeansAlgorithm extends AbstractCyniAlgorithm  {
 	
 	
 	private CyTable selectedTable;
-	private String filePath;
 	/**
 	 * Creates a new EqualDiscretization object.
 	 */
-	public DreamTDCAlgorithm(String filePath) {
-		super("dreamTDC","Dream8 DC_TDC Algorithm",true,CyniCategory.INDUCTION);
-		this.filePath = filePath;
+	public DreamCkMeansAlgorithm() {
+		super("dreamCkMeans","Dream8 CkMeans",true,CyniCategory.DISCRETIZATION);
 				
 		
 	}
@@ -73,14 +71,13 @@ public class DreamTDCAlgorithm extends AbstractCyniAlgorithm  {
 			CyNetworkManager networkManager,CyNetworkTableManager netTableMgr, CyRootNetworkManager rootNetMgr,VisualMappingManager vmMgr,
 			CyNetworkViewManager networkViewManager, CyLayoutAlgorithmManager layoutManager, CyCyniMetricsManager metricsManager) {
 			selectedTable = table;
-			return new TaskIterator(new DreamTDCAlgorithmTask(getName(),(DreamTDCAlgorithmContext) context,networkFactory,networkViewFactory,
-					networkManager,netTableMgr,rootNetMgr,vmMgr,networkViewManager,layoutManager,metricsManager, selectedTable,filePath));
+			return new TaskIterator(new DreamCkMeansAlgorithmTask(getName(),(DreamCkMeansAlgorithmContext) context, selectedTable));
 	}
 	
-	public DreamTDCAlgorithmContext createCyniContext(CyTable table, CyCyniMetricsManager metricsManager, TunableSetter tunableSetter,Map<String, Object> mparams) {
-		DreamTDCAlgorithmContext context;
+	public DreamCkMeansAlgorithmContext createCyniContext(CyTable table, CyCyniMetricsManager metricsManager, TunableSetter tunableSetter,Map<String, Object> mparams) {
+		DreamCkMeansAlgorithmContext context;
 		selectedTable = table;
-		context = new DreamTDCAlgorithmContext(selectedTable);
+		context = new DreamCkMeansAlgorithmContext(selectedTable);
 		if(mparams != null && !mparams.isEmpty())
 			tunableSetter.applyTunables(context, mparams);
 		return context;
