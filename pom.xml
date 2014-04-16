@@ -29,7 +29,7 @@
 					<instructions>
 						<Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
 						<Bundle-Version>${project.version}</Bundle-Version>
-						<Embed-Dependency>commons-lang3;inline=true</Embed-Dependency>
+						<Embed-Dependency>commons-math3;inline=true</Embed-Dependency>
 						<Embed-Transitive>true</Embed-Transitive>
 						<Export-Package>!${bundle.namespace}.*</Export-Package>
 						<!--<Cytoscape-App-Dependencies>Cyni Toolbox;1.0.0.beta6</Cytoscape-App-Dependencies>-->
@@ -123,8 +123,8 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.1</version>
+			<artifactId>commons-math3</artifactId>
+			<version>3.0</version>
 		</dependency>
 
 		<dependency>

@@ -13,10 +13,10 @@ import org.cytoscape.work.Tunable;
 import org.cytoscape.work.TunableValidator;
 
 public class DreamFunchisqAlgorithmContext extends CyniAlgorithmContext implements TunableValidator {
-	@Tunable(description="Threshold to add new edge", gravity=1.0)
-	public double thresholdAddEdge = 0.5;
+	@Tunable(description="P-Value threshold to add new edge", gravity=1.0)
+	public double thresholdAddEdge = 0.05;
 	
-	@Tunable(description="Type of correlation", gravity=2.0)
+	@Tunable(description="Type of computation", gravity=2.0)
 	public ListSingleSelection<String> type = new ListSingleSelection<String>(CHI_SQUARE,NORMALIZED);
 	
 	@Tunable(description="Use selected nodes only", groups="Parameters if a network associated to table data", gravity=3.0)
@@ -39,7 +39,10 @@ public class DreamFunchisqAlgorithmContext extends CyniAlgorithmContext implemen
 		if(attributes.size() > 0)
 		{
 			attributeList = new  ListMultipleSelection<String>(attributes);
-			attributeList.setSelectedValues(attributeList.getPossibleValues());
+			List<String> temp = new ArrayList<String>( attributes);
+			temp.remove(table.getPrimaryKey().getName());
+			if(!temp.isEmpty())
+				attributeList.setSelectedValues(temp);
 		}
 		else
 		{

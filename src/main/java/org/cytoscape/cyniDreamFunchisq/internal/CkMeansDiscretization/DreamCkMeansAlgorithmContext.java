@@ -1,16 +1,12 @@
 package org.cytoscape.cyniDreamFunchisq.internal.CkMeansDiscretization;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.*;
-import java.util.zip.ZipInputStream;
 
 import org.cytoscape.cyni.CyniAlgorithmContext;
 import org.cytoscape.model.CyTable;
 import org.cytoscape.work.TunableValidator.ValidationState;
 import org.cytoscape.work.util.*;
-import org.apache.commons.lang3.StringUtils;
 
 import org.cytoscape.work.Tunable;
 import org.cytoscape.work.TunableValidator;

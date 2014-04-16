@@ -35,6 +35,7 @@ import org.cytoscape.model.subnetwork.CyRootNetworkManager;
 public class DreamFunchisqAlgorithmTask extends AbstractCyniTask {
 	private double thresholdAddEdge;
 	private boolean removeNodes = false;
+	private boolean normalized;
 	private final List<String> attributeArray;
 	private final CyTable table;
 	
@@ -58,7 +59,10 @@ public class DreamFunchisqAlgorithmTask extends AbstractCyniTask {
 		this.layoutManager = layoutManager;
 		this.metricsManager = metricsManager;
 		//this.removeNodes = context.removeNodes;
-		
+		if(context.type.getSelectedValue().matches(DreamFunchisqAlgorithmContext.CHI_SQUARE))
+			normalized = false;
+		else
+			normalized = true;
 		this.attributeArray = context.attributeList.getSelectedValues();
 		this.table = selectedTable;
 		this.netUtils = new CyniNetworkUtils(networkViewFactory,networkManager,networkViewManager,netTableMgr,rootNetMgr,vmMgr);
@@ -102,8 +106,12 @@ public class DreamFunchisqAlgorithmTask extends AbstractCyniTask {
 		// Create the CyniTable
 		CyniTable data = selectedMetric.getCyniTable(table,attributeArray.toArray(new String[0]), false, false, selectedOnly);
 		
-		if(selectedMetric.getTagsList().contains(CyniMetricTags.DIRECTIONAL_METRIC))
+		if(selectedMetric.getTagsList().contains(CyniMetricTags.DIRECTIONAL_METRIC.toString()))
 			directional = true;
+		
+		Map<String,Object> params = new HashMap<String,Object>();
+		params.put("Normalized", normalized);
+		selectedMetric.setParameters(params);
 		
 		nRows = data.nRows();
 		step = 1.0 / nRows;
@@ -112,6 +120,7 @@ public class DreamFunchisqAlgorithmTask extends AbstractCyniTask {
 		threadIndex = new int[nRows];
 		Arrays.fill(threadResults, 0.0);
 		
+		System.out.println("direcyional " + directional);
 		netUtils.setNetworkName(newNetwork, "Dream8 FunChisq Inference " + iteration);
 		
 		
@@ -139,6 +148,8 @@ public class DreamFunchisqAlgorithmTask extends AbstractCyniTask {
 				if (cancelled)
 					break;
 				
+				if(i == j)
+					continue;
 				index.set(0, j);
 				executor.execute(new ThreadedGetMetric(data,i,index,threadNumber,threadResults));
 				threadIndex[threadNumber] = j;
@@ -153,8 +164,9 @@ public class DreamFunchisqAlgorithmTask extends AbstractCyniTask {
 			for(int pool = 0; pool< threadNumber;pool++)
 			{
 				result = threadResults[pool];
+				//System.out.println("result: " + result);
 				
-				if(result > thresholdAddEdge)
+				if(result <= thresholdAddEdge)
 				{
 					if(!mapRowNodes.containsKey(data.getRowLabel(i)))
 					{
