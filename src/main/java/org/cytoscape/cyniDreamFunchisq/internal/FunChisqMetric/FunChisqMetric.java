@@ -7,8 +7,7 @@ import java.util.*;
 
 
 /**
- * The BasicInduction provides a very simple Induction, suitable as
- * the default Induction for Cytoscape data readers.
+ * Cyni Metric implementation of FunChisq metric
  */
 public class FunChisqMetric extends AbstractCyniMetric {
 	/**
@@ -18,6 +17,7 @@ public class FunChisqMetric extends AbstractCyniMetric {
 		super("DreamFunchisqMetric","Dream FunChisq Metric");
 		addTag(CyniMetricTags.INPUT_STRINGS.toString());
 		addTag(CyniMetricTags.DIRECTIONAL_METRIC.toString());
+		addTag(CyniMetricTags.LOW_METRIC.toString());
 		stats =  new StatDistributions();
 		normalized = true;
 	}
@@ -30,6 +30,7 @@ public class FunChisqMetric extends AbstractCyniMetric {
 		double result = 0.0;
 		ChisqCyniTable chisqTable1 = null;
 		ChisqCyniTable chisqTable2 = null;
+		int[][] table_obs;
        
 		if(table1 instanceof ChisqCyniTable)
 			chisqTable1 = (ChisqCyniTable) table1;
@@ -39,24 +40,26 @@ public class FunChisqMetric extends AbstractCyniMetric {
 		if(chisqTable1 == null)
 			return result;
 		
-		int K,df;
+		int df;
 		
-		K = chisqTable1.getAttributeStringValues().size();
+		table_obs = createContengency(chisqTable1,indexBase,indexToCompare.get(0));
 		
+		int nrow =  table_obs.length;
+		int K = (int) table_obs[0].length;
+				
 		if(K == 0)
 			return result;
 		
 		double[] p_null = new double[K];//(K, 1.0/K); 
-		Arrays.fill(p_null, 1.0/K);
+		Arrays.fill(p_null, 1.0/(double)K);
 		int[] n_y = new int[K];  // the histogram of child y
 		
-		int[][] table_obs;
 		
-		table_obs = createContengency(chisqTable1,K,indexBase,indexToCompare.get(0));
-		
-		for(int j = 0; j < K; j++){
+		for(int j = 0; j < K; j++)
+		{
 
-			for(int i = 0; i < K; i++){
+			for(int i = 0; i < nrow; i++)
+			{
 
 				n_y[j] += table_obs[i][j];
 
@@ -68,7 +71,7 @@ public class FunChisqMetric extends AbstractCyniMetric {
 
 		df = K-1;
 		
-		for(int i=0; i<K; i++) {
+		for(int i=0; i<nrow; i++) {
 			double chisq_row = 0;
 			chisq_row = ChisquareTest1DNoPValue(table_obs[i], p_null, K);
 			
@@ -82,7 +85,7 @@ public class FunChisqMetric extends AbstractCyniMetric {
 		//System.out.println("chisq_y: " + chisq_y);
 		chisquare -= chisq_y;
 
-		df = (K-1) * (K-1);
+		df = (nrow-1) * (K-1);
 		
 		if(normalized) {
 	        
@@ -117,17 +120,38 @@ public class FunChisqMetric extends AbstractCyniMetric {
 		
 	}
 	
-	int[][] createContengency(ChisqCyniTable table, int size, int index1, int index2)
+	int[][] createContengency(ChisqCyniTable table, int index1, int index2)
 	{
-		int[][] content = new int[size][size];
+		
 		int cols = table.nColumns();
 		int id1,id2;
+		int i= 0;
+		Map<String,Integer> mapIds1, mapIds2;
+		Set<String> tempSet1;
+		Set<String> tempSet2;
+		tempSet1 = table.getSetValues(index1);
+		tempSet2 = table.getSetValues(index2);
 		
-		for(int i =0;i < cols ; i++)
+		mapIds1 =  new HashMap<String,Integer>(tempSet1.size());
+		mapIds2 =  new HashMap<String,Integer>(tempSet2.size());
+		for(String value : tempSet1)
 		{
+			mapIds1.put(value, i);
+			i++;
+		}
+		i = 0;
+		for(String value : tempSet2)
+		{
+			mapIds2.put(value, i);
+			i++;
+		}
+		int[][] content = new int[tempSet1.size()][tempSet2.size()];
+		
+		for( i =0;i < cols ; i++)
+		{
+			id1 = mapIds1.get(table.stringValue(index1, i));
+			id2 = mapIds2.get(table.stringValue(index2, i));
 			
-			id1 = table.getIdForStringValue(table.stringValue(index1, i));
-			id2 = table.getIdForStringValue(table.stringValue(index2, i));
 			
 			content[id1][id2]++;
 			
@@ -143,9 +167,8 @@ public class FunChisqMetric extends AbstractCyniMetric {
 		
 		double chisq = 0;
 		
-		for(int k=0; k<K; k++) {
-		N += x_obs[k];
-		}
+		for(int k=0; k<K; k++) 
+			N += x_obs[k];
 		
 		if(N <= 0) 
 			return chisq;
@@ -154,12 +177,12 @@ public class FunChisqMetric extends AbstractCyniMetric {
 		for(int k=0; k<K; k++) 
 		{
 			double x_exp = N * p_null[k];
-			if(x_exp != 0) {
+			if(x_exp != 0) 
 				chisq += (x_obs[k] - x_exp)*(x_obs[k] - x_exp)/ x_exp;
-			} else if(x_obs[k] != 0) {
+			else if(x_obs[k] != 0) 
 				System.out.println("ERROR: expected is zero, but observed is not. Impossible!" );
 				//exit(EXIT_FAILURE); 
-			}
+			
 		}
 		
 		return chisq;

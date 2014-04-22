@@ -41,7 +41,8 @@ public class StatDistributions  {
 	double NormalPvalue(double x, double mu, double stdev, boolean two_sided)
 	{
 		NormalDistribution Normal = new NormalDistribution(mu, stdev);
-	    double pval;
+		//Normaldist Normal = new Normaldist(mu, stdev);
+	    double pval =0;
 	    if(two_sided) {
 	        if (x >= mu) {
 	            pval = 2.0 * (1.0 - Normal.cumulativeProbability(x));
@@ -51,9 +52,10 @@ public class StatDistributions  {
 	    } else {
 	    	//System.out.println("cdf( " + x + "): " +  Normal.cumulativeProbability(x));
 	        pval = 1.0 - Normal.cumulativeProbability(x);
+	    	//pval = 1.0 - Normal.cdf(x);
 	    }
 	    return pval;
 	}
-
+	
 	
 }

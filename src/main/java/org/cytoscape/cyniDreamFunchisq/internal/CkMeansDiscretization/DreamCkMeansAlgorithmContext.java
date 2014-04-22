@@ -23,15 +23,22 @@ public class DreamCkMeansAlgorithmContext extends CyniAlgorithmContext implement
 	public int minK = 1;
 	@Tunable(description="Maximum intervals",groups={"Interval Definition","Range Interval Definition"},xorKey="Range of intervals", gravity=4.0)
 	public int maxK = 5;
+	
+	
 	@Tunable(description="Apply same discretization thresholds for all selected attributes", gravity=5.0)
-	public Boolean all = true;
+	public Boolean all = false;
 
-	@Tunable(description="Numerical Attributes", groups="Attributes to discretize", gravity=6.0)
+	@Tunable(description="Type of discretization", dependsOn="all=false", gravity=6.0)
+	public ListSingleSelection<String> type = new ListSingleSelection<String>(BY_ROWS,BY_COLUMNS);
+	
+	@Tunable(description="Numerical Attributes", groups="Attributes to discretize" ,gravity=7.0)
 	public ListMultipleSelection<String> attributeList;
 	
 	private List<String> attributes;
 	public static String ONE_INTERVAL = "One interval";
 	public static String RANGE_INTERVALS = "Range of intervals";
+	public static String BY_COLUMNS = "By columns";
+	public static String BY_ROWS = "By rows";
 
 	public DreamCkMeansAlgorithmContext( CyTable table) {
 		super(true);

@@ -9,13 +9,23 @@ import java.util.*;
 
 public class ChisqCyniTable extends CyniTable {
 	
-	Map<String,Integer> mapIds;
+	List<Set<String>> rowListStringDiff;
 
 	public ChisqCyniTable(  CyTable table, String[] attributes, boolean transpose, boolean ignoreMissing, boolean selectedOnly) {
 		super(table,attributes,transpose,ignoreMissing,  selectedOnly);
 		
-		mapIds =  new HashMap<String,Integer>(this.getAttributeStringValues().size());
-		createIdMapValues();
+		rowListStringDiff = new ArrayList<Set<String>>(nRows);
+		
+		for(int i=0;i< nRows;i++)
+		{
+			Set<String> newSet = new HashSet<String>();
+			for(int j=0;j<nColumns;j++)
+			{
+				newSet.add(stringValue(i,j));
+			}
+			rowListStringDiff.add(i, newSet);
+		}
+		//createIdMapValues();
 	}
 	
 	public ChisqCyniTable(CyniTable table)
@@ -24,25 +34,13 @@ public class ChisqCyniTable extends CyniTable {
 		
 	}
 	
-	private void createIdMapValues()
-	{
-		int i= 0;
-		for(String value : getAttributeStringValues())
-		{
-			mapIds.put(value, i);
-			i++;
-		}
-	}
-	
-	public int getIdForStringValue(String value)
+	public Set<String> getSetValues(int row)
 	{
 		
-		if(mapIds.get(value) == null)
-			return -1;
-		else
-			return mapIds.get(value);
+		return rowListStringDiff.get(row);
 	}
-    
+	
+	
 
 }
 

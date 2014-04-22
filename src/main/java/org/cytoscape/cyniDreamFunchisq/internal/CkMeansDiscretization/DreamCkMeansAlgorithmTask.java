@@ -74,7 +74,7 @@ public class DreamCkMeansAlgorithmTask extends AbstractCyniTask {
 	private  final int bins;
 	private final CyTable mytable;
 	private final List<String> attributeArray;
-	private final Boolean all;
+	private final Boolean all, byCol;
 	private List<String> columnsNames;
 	private Component parent;
 	private int kmin,kmax;
@@ -85,7 +85,7 @@ public class DreamCkMeansAlgorithmTask extends AbstractCyniTask {
 	 */
 	public DreamCkMeansAlgorithmTask(final String name, final DreamCkMeansAlgorithmContext context,CyTable selectedTable)
 	{
-		super(name, context,null,null,null, null,null,null, null);
+		super(name, context);
 		
 		this.mytable = selectedTable;
 		bins = context.bins;
@@ -103,6 +103,11 @@ public class DreamCkMeansAlgorithmTask extends AbstractCyniTask {
 			
 		this.attributeArray = context.attributeList.getSelectedValues();
 		
+		if(context.type.getSelectedValue().matches(DreamCkMeansAlgorithmContext.BY_COLUMNS))
+			byCol = true;
+		else
+			byCol = false;
+		
 		parent = context.getParentSwingComponent();
 		
 		
@@ -119,17 +124,21 @@ public class DreamCkMeansAlgorithmTask extends AbstractCyniTask {
 		String label = "";
 		int pos = 0;
 		CyColumn column;
-		String newColName;
+		String newColName = "";
 		ClusterResult clResult = null;
 		columnsNames = new ArrayList<String>();
-		Map<Object,Integer> rowMap = new HashMap<Object,Integer>();
 		double matrix[][];
+		CyRow arrayRows[], row = null;
+		Map<String,String> mapNamesCols = new HashMap<String,String>();
+		String[] colNames;
 		double[] data ;
 		matrix = new double[mytable.getAllRows().size()][attributeArray.size()];
 		DreamKmeans_1d_dp kmeans = new DreamKmeans_1d_dp();
 		
 		int rows = mytable.getAllRows().size();
+		arrayRows = new CyRow[rows];
 		int index = 0;
+		colNames = attributeArray.toArray(new String[attributeArray.size()]);
    
         step = 1.0 /  attributeArray.size();
         
@@ -137,15 +146,15 @@ public class DreamCkMeansAlgorithmTask extends AbstractCyniTask {
         taskMonitor.setStatusMessage("Discretizating data...");
 		taskMonitor.setProgress(progress);
 		
-		for(CyRow row :  mytable.getAllRows())
+		for(CyRow rowTemp :  mytable.getAllRows())
 		{
+			arrayRows[index] = rowTemp;
 			for(int j=0;j<attributeArray.size();j++)
 			{
-				Class<?> type = mytable.getColumn(attributeArray.get(j)).getType();
-				matrix[index][j] = (Double) row.get(attributeArray.get(j),  type);
+				Class<?> type = mytable.getColumn(colNames[j]).getType();
+				matrix[index][j] = (Double) rowTemp.get(colNames[j],  type);
 			}
 			
-			rowMap.put(row.getRaw(mytable.getPrimaryKey().getName()), index);
 			index++;
 		}
 		
@@ -159,9 +168,29 @@ public class DreamCkMeansAlgorithmTask extends AbstractCyniTask {
 					data[pos++]= matrix[j][i];
 			
 			clResult = kmeans.kmeans_1d_dp(data, kmin, kmax);
+			
+			System.out.println("num clusters: " + Arrays.toString(clResult.size));
+			
+			System.out.println("means clusters: " + Arrays.toString(clResult.centers));
+		
+			System.out.println("withiness clusters: " + Arrays.toString(clResult.withinss));
 		}
 		
+		int size1 = 0, size2 = 0;
 		
+		if(all || byCol)
+		{
+			size1 = colNames.length;
+			size2 = arrayRows.length;
+		}
+		else
+		{
+			if(!byCol)
+			{
+				size2 = colNames.length;
+				size1 = arrayRows.length;
+			}
+		}
 	
 		for (final String  columnName : attributeArray)
 		 {
@@ -174,33 +203,67 @@ public class DreamCkMeansAlgorithmTask extends AbstractCyniTask {
 			
 			mytable.createColumn(newColName, String.class, false);
 			
+			mapNamesCols.put(columnName, newColName);
+			
+		 }
+		
+		for(int i=0;i < size1;i++)
+		{
+			
 			if(!all)
 			{
-				data = new double[rows+1];
-				pos = 1;
-				index = attributeArray.indexOf(columnName);
-				for (int i= 0; i < rows; i++)
-					data[pos++] = matrix[i][index];
-				
+				if(byCol)
+				{
+					data = new double[rows+1];
+					pos = 1;
+					for (int t= 0; t < rows; t++)
+						data[pos++] = matrix[t][i];
+					
+					newColName = mapNamesCols.get(colNames[i]);
+				}
+				else
+				{
+					row = arrayRows[i];
+					data = new double[attributeArray.size()+1];
+					pos = 1;
+					for (int t= 0; t < attributeArray.size(); t++)
+						data[pos++] = matrix[i][t];
+				}
+			
 				clResult = kmeans.kmeans_1d_dp(data, kmin, kmax);
-				
 			}
-			for ( CyRow row : mytable.getAllRows() ) 
+			else
+				newColName = mapNamesCols.get(colNames[i]);
+			
+			for ( int j = 0 ;j < size2 ; j++ ) 
 			{
-				index = rowMap.get(row.getRaw(mytable.getPrimaryKey().getName()));
-				if(all)
-					index  += attributeArray.indexOf(columnName)*rows;
+				index = j;
+				
+				if(all || byCol)
+				{
+					row = arrayRows[j];
+					if(all)
+						index  += i*rows;
+				}
+				
+				if(!all && !byCol)
+					newColName = mapNamesCols.get(colNames[j]);
+				
 				
 				if( clResult != null)
 					label = "Cluster " + clResult.cluster[index +1];
+				
 				row.set(newColName, label);
 			}
 			
-			System.out.println("num clusters: " + Arrays.toString(clResult.size));
+			if(!all)
+			{
+				System.out.println("num clusters: " + Arrays.toString(clResult.size));
 			
-			System.out.println("means clusters: " + Arrays.toString(clResult.centers));
+				System.out.println("means clusters: " + Arrays.toString(clResult.centers));
 			
-			System.out.println("withiness clusters: " + Arrays.toString(clResult.withinss));
+				System.out.println("withiness clusters: " + Arrays.toString(clResult.withinss));
+			}
 			 
 			 progress = progress + step;
 			 taskMonitor.setProgress(progress);

@@ -120,7 +120,6 @@ public class DreamFunchisqAlgorithmTask extends AbstractCyniTask {
 		threadIndex = new int[nRows];
 		Arrays.fill(threadResults, 0.0);
 		
-		System.out.println("direcyional " + directional);
 		netUtils.setNetworkName(newNetwork, "Dream8 FunChisq Inference " + iteration);
 		
 		
@@ -130,6 +129,8 @@ public class DreamFunchisqAlgorithmTask extends AbstractCyniTask {
 		netUtils.createNetworkColumn(newNetwork,"Metric", String.class, false);	
 		netUtils.createEdgeColumn(newNetwork,"Score", Double.class, false);	
 		newNetwork.getDefaultNetworkTable().getRow(newNetwork.getSUID()).set("Metric",selectedMetric.toString());
+		
+		selectedMetric.initMetric();
 		
 		// Create the thread pools
 		ExecutorService executor = Executors.newFixedThreadPool(nThreads);
@@ -201,7 +202,7 @@ public class DreamFunchisqAlgorithmTask extends AbstractCyniTask {
 						numNodes++;
 					}
 							
-					if(!newNetwork.containsEdge(mapRowNodes.get(data.getRowLabel(i)), mapRowNodes.get(data.getRowLabel(threadIndex[pool]))))
+					if(!newNetwork.containsEdge(mapRowNodes.get(data.getRowLabel(i)), mapRowNodes.get(data.getRowLabel(threadIndex[pool]))) || directional)
 					{
 						edge = newNetwork.addEdge(mapRowNodes.get(data.getRowLabel(i)), mapRowNodes.get(data.getRowLabel(threadIndex[pool])), directional);
 						newNetwork.getRow(edge).set("Score", threadResults[pool]);
