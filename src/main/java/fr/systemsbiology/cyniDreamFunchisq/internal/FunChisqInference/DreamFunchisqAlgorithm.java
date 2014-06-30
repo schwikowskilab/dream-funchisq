@@ -1,11 +1,11 @@
 
-package org.cytoscape.cyniDreamFunchisq.internal.FunChisqInference;
+package fr.systemsbiology.cyniDreamFunchisq.internal.FunChisqInference;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.cytoscape.cyni.*;
+import fr.systemsbiology.cyni.*;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.view.layout.CyLayoutAlgorithmManager;
 import org.cytoscape.view.model.CyNetworkView;

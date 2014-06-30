@@ -1,9 +1,9 @@
-package org.cytoscape.cyniDreamFunchisq.internal.CkMeansDiscretization;
+package fr.systemsbiology.cyniDreamFunchisq.internal.CkMeansDiscretization;
 
 import java.io.IOException;
 import java.util.*;
 
-import org.cytoscape.cyni.CyniAlgorithmContext;
+import fr.systemsbiology.cyni.CyniAlgorithmContext;
 import org.cytoscape.model.CyTable;
 import org.cytoscape.work.TunableValidator.ValidationState;
 import org.cytoscape.work.util.*;

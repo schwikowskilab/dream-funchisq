@@ -1,6 +1,6 @@
-package org.cytoscape.cyniDreamFunchisq.internal.FunChisqMetric;
+package fr.systemsbiology.cyniDreamFunchisq.internal.FunChisqMetric;
 
-import org.cytoscape.cyni.*;
+import fr.systemsbiology.cyni.*;
 import org.cytoscape.model.CyTable;
 
 import java.util.*;

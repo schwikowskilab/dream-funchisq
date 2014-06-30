@@ -1,17 +1,17 @@
-package org.cytoscape.cyniDreamFunchisq.internal;
+package fr.systemsbiology.cyniDreamFunchisq.internal;
 
 import org.cytoscape.application.swing.CySwingApplication;
 
 
 
 import org.cytoscape.application.swing.CyAction;
-import org.cytoscape.cyni.*;
+import fr.systemsbiology.cyni.*;
 
 import org.osgi.framework.BundleContext;
 
-import org.cytoscape.cyniDreamFunchisq.internal.CkMeansDiscretization.*;
-import org.cytoscape.cyniDreamFunchisq.internal.FunChisqInference.*;
-import org.cytoscape.cyniDreamFunchisq.internal.FunChisqMetric.*;
+import fr.systemsbiology.cyniDreamFunchisq.internal.CkMeansDiscretization.*;
+import fr.systemsbiology.cyniDreamFunchisq.internal.FunChisqInference.*;
+import fr.systemsbiology.cyniDreamFunchisq.internal.FunChisqMetric.*;
 
 import org.cytoscape.property.CyProperty;
 import org.cytoscape.service.util.AbstractCyActivator;

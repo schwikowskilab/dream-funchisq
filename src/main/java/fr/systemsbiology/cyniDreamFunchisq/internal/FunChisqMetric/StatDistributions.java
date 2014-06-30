@@ -1,4 +1,4 @@
-package org.cytoscape.cyniDreamFunchisq.internal.FunChisqMetric;
+package fr.systemsbiology.cyniDreamFunchisq.internal.FunChisqMetric;
 
 
 import org.apache.commons.math3.special.Gamma;

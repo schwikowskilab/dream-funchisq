@@ -1,5 +1,5 @@
 
-package org.cytoscape.cyniDreamFunchisq.internal.FunChisqInference;
+package fr.systemsbiology.cyniDreamFunchisq.internal.FunChisqInference;
 
 
 
@@ -23,7 +23,7 @@ import org.cytoscape.view.model.CyNetworkViewFactory;
 import org.cytoscape.view.model.CyNetworkViewManager;
 import org.cytoscape.view.vizmap.VisualMappingManager;
 import org.cytoscape.work.TaskMonitor;
-import org.cytoscape.cyni.*;
+import fr.systemsbiology.cyni.*;
 import org.cytoscape.model.CyTable;
 import org.cytoscape.model.subnetwork.CyRootNetworkManager;
 

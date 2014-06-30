@@ -1,5 +1,5 @@
 
-package org.cytoscape.cyniDreamFunchisq.internal.FunChisqInference;
+package fr.systemsbiology.cyniDreamFunchisq.internal.FunChisqInference;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -8,7 +8,7 @@ import java.util.List;
 import org.cytoscape.work.util.*;
 import org.cytoscape.model.CyTable;
 
-import org.cytoscape.cyni.*;
+import fr.systemsbiology.cyni.*;
 import org.cytoscape.work.Tunable;
 import org.cytoscape.work.TunableValidator;
 
@@ -41,8 +41,8 @@ public class DreamFunchisqAlgorithmContext extends CyniAlgorithmContext implemen
 			attributeList = new  ListMultipleSelection<String>(attributes);
 			List<String> temp = new ArrayList<String>( attributes);
 			temp.remove(table.getPrimaryKey().getName());
-			if(!temp.isEmpty())
-				attributeList.setSelectedValues(temp);
+			//if(!temp.isEmpty())
+			//	attributeList.setSelectedValues(temp);
 		}
 		else
 		{
